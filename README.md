@@ -1,6 +1,6 @@
 # ServerSeeker
 
-High‑performance internet server discovery & rescanning platform, built around a Rust scanner backend, PostgreSQL storage, and a live Python Streamlit WebUI.
+High-performance internet server discovery & rescanning platform, built around a Rust scanner backend, PostgreSQL storage, and a live Python Streamlit WebUI.
 
 > **Based on:** Funtimes909’s ServerSeekerV2
 > [https://github.com/Funtimes909/ServerSeekerV2/](https://github.com/Funtimes909/ServerSeekerV2/)
@@ -11,27 +11,26 @@ This project is a fork/derivative with architectural tweaks, Docker support, and
 
 ## Contents
 
-- [Features](#features)
-- [Setup](#setup)
-  - [Prerequisites](#prerequisites)
-- [Config](#config)
-  - [Masscan configuration](#masscan-configuration)
-  - [Country detection (IP geolocation)](#country-detection-ip-geolocation)
-  - [Database credentials](#database-credentials)
-  - [Shared buffers tuning](#shared-buffers-tuning)
-- [WebUI](#webui)
-- [Configuration files](#configuration-files)
-  - [Main configs](#main-configs)
-  - [Dockerfiles](#dockerfiles)
-- [Credits](#credits)
-- [License](#license)
+* [Features](#features)
+* [Setup](#setup)
+  * [Prerequisites](#prerequisites)
+  * [Initial configuration (required)](#initial-configuration-required)
+  * [Build & run](#build--run)
+* [Config](#config)
+  * [Masscan configuration](#masscan-configuration)
+  * [Database credentials](#database-credentials)
+  * [Shared buffers tuning](#shared-buffers-tuning)
+* [WebUI](#webui)
+* [Configuration files](#configuration-files)
+* [Credits](#credits)
+* [License](#license)
 
 ---
 
 ## Features
 
-* ⚡ Rust‑based high‑speed scanner
-* 📦 Full Docker + docker‑compose deployment
+* ⚡ Rust-based high-speed scanner
+* 📦 Full Docker + docker-compose deployment
 * 🌐 Live Streamlit WebUI
 * 🗄 PostgreSQL backend
 * 🔁 Discovery + Rescanner modes
@@ -43,25 +42,55 @@ This project is a fork/derivative with architectural tweaks, Docker support, and
 # Setup
 
 ### Prerequisites
-- [Docker](https://www.docker.com/get-started/)
-- [Git](https://github.com/git-guides/install-git)
-- [IPInfo API Key](https://ipinfo.io/dashboard)
+
+* [Docker](https://www.docker.com/get-started/)
+* [Git](https://github.com/git-guides/install-git)
+* [IPInfo API Key](https://ipinfo.io/dashboard)
+
+---
+
+### Initial configuration (required)
+
+
+#### 1. Clone the repository
 
 ```bash
 git clone https://github.com/sensoorr/ServerSeeker.git
 cd ServerSeeker
+```
 
+#### 2. Add your IPInfo API key
+
+Create an account at:
+
+```
+https://ipinfo.io/dashboard
+```
+
+Navigate to `./scanner/config.toml` and add your IPInfo token:
+
+```toml
+ipinfo_token = "YOUR_API_KEY_HERE"
+```
+
+---
+
+## Build & run
+
+After configuration is complete:
+
+```bash
 docker compose build
 docker compose up -d
 ```
 
 Then open:
 
-```
-http://localhost:8501
-```
+[`http://localhost:8501`](http://localhost:8501)
 
-Note: May take a few minutes to begin populating as it pulls IP data (if enabled)
+Note: Initial startup may take a few minutes while IP data is collected.
+
+---
 
 ## Config
 
@@ -74,45 +103,19 @@ Recommended values for `scanner/masscan.conf -> rate`:
 * `5000` – common default
 * `10000` – works, but potential for packet loss
 
-Note: Values above 10,000 may cause significant packet loss on home connections.
+> Values above 10,000 may cause significant packet loss on home connections.
 
-
-### Country detection (IP Geolocation)
-
-To enable server country detection:
-
-1. Create an account at:
-
-```
-https://ipinfo.io/dashboard
-```
-
-2. Generate an API key
-
-3. Add it to:
-
-* `./scanner/config.toml`
-
-```toml
-ipinfo_token = ""
-```
-
-4. Enable `country_tracking`:
-```toml
-enabled = true
-```
+---
 
 ## Database credentials
 
-Credentials are defined in *multiple locations* and must be kept in sync:
-
-You will typically need to edit:
+Credentials are defined in **multiple locations** and must be kept in sync:
 
 * `docker-compose.yml` (Postgres service)
 * `./scanner/config.toml`
 * `./webui/app.py`
 
-Look for:
+Ensure consistency for:
 
 * Database name
 * Username
@@ -120,41 +123,44 @@ Look for:
 * Host
 * Port
 
-Note: Mismatched credentials will cause connection failures.
+> Mismatched credentials will cause connection failures.
+
+---
 
 ### Shared buffers tuning
 
-You may want to tune PostgreSQL memory usage in `docker-compose.yml -> db`:
+PostgreSQL memory tuning in `docker-compose.yml -> db`:
 
 ```yaml
 command: postgres -c synchronous_commit=off -c fsync=off -c shared_buffers=4GB
 ```
 
-**Rule of thumb (community guideline, not official PostgreSQL recommendation):**
+Guideline:
 
-* `shared_buffers ≈ 15–25% of your system's RAM ($$$)`
+* `shared_buffers ≈ 15–25% of system RAM`
 
-Example:
+Examples:
 
-* 16GB RAM -> 4GB
-* 32GB RAM -> 8GB
+* 16GB RAM → 4GB
+* 32GB RAM → 8GB
 
 ---
 
 ## WebUI
 
-Streamlit interface is available at:
+Streamlit interface:
 
 ```
 http://localhost:8501
 ```
 
-Provides:
-- Live view of database content
-- Searching by MOTD or IP
-- Filtering by minimum online players
-- Filtering by server software
-- Filtering by server version
+Features:
+
+* Live database view
+* Search by MOTD or IP
+* Filter by online players
+* Filter by server software
+* Filter by server version
 
 ---
 
@@ -176,12 +182,12 @@ Provides:
 
 ## Credits
 
-* Original project:
-  **Funtimes909 – ServerSeekerV2**
-  [https://github.com/Funtimes909/ServerSeekerV2/](https://github.com/Funtimes909/ServerSeekerV2/)
+**Original project:**
+Funtimes909 – ServerSeekerV2
+[https://github.com/Funtimes909/ServerSeekerV2/](https://github.com/Funtimes909/ServerSeekerV2/)
 
-* SQL schema source:
-  [https://github.com/fuuuuuuuuuuuuuuck/ServerSeekerV2-guide](https://github.com/fuuuuuuuuuuuuuuck/ServerSeekerV2-guide)
+**SQL schema source:**
+[https://github.com/fuuuuuuuuuuuuuuck/ServerSeekerV2-guide](https://github.com/fuuuuuuuuuuuuuuck/ServerSeekerV2-guide)
 
 ---
 
