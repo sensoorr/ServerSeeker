@@ -61,6 +61,8 @@ Then open:
 http://localhost:8501
 ```
 
+Note: May take a few minutes to begin populating as it pulls IP data (if enabled)
+
 ## Config
 
 ### Masscan configuration
@@ -93,6 +95,11 @@ https://ipinfo.io/dashboard
 
 ```toml
 ipinfo_token = ""
+```
+
+4. Enable `country_tracking`:
+```toml
+enabled = true
 ```
 
 ## Database credentials
