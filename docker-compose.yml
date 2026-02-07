@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: seeker_db
+    command: postgres -c synchronous_commit=off -c fsync=off -c shared_buffers=1GB
+    environment:
+      POSTGRES_DB: serverseeker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: SuperSuperSecretPassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./server.sql:/docker-entrypoint-initdb.d/server.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d serverseeker"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  webui:
+    build: ./webui
+    container_name: seeker_ui
+    ports:
+      - "8501:8501"
+    environment:
+      - DB_URL=postgresql://postgres:SuperSuperSecretPassword@db:5432/serverseeker
+    depends_on:
+      db:
+        condition: service_healthy
+
+  scanner:
+    build: ./scanner
+    container_name: seeker_scanner
+    cap_add:
+      - NET_ADMIN
+    network_mode: "host"
+    environment:
+      - DB_URL=postgresql://postgres:SuperSuperSecretPassword@localhost:5433/serverseeker
+    depends_on:
+      webui:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local

@@ -1,0 +1,20 @@
+[scanner]
+repeat = true
+scan_delay = 10
+port_range_start = 25565
+port_range_end = 25565
+
+[masscan]
+config_file = "masscan.conf"
+
+[database]
+host = "localhost"
+port = 5433
+table = "serverseeker"
+user = "postgres"
+password = "SuperSuperSecretPassword"
+
+[country_tracking]
+enabled = true
+update_frequency = 48
+ipinfo_token = ""
