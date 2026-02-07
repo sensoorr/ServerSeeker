@@ -17,4 +17,4 @@ password = "SuperSuperSecretPassword"
 [country_tracking]
 enabled = true
 update_frequency = 48
-ipinfo_token = ""
+ipinfo_token = "API_KEY_HERE"
